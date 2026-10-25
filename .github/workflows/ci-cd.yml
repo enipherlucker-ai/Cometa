@@ -1,5 +1,5 @@
 env:
-  IMAGE_PREFIX: ghcr.io/enipherlucker-ai/Cometa
+  IMAGE_PREFIX: ghcr.io/enipherlucker-ai/cometa
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
