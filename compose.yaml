@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    image: fastapi-train:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./app:/my_code/app
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    env_file:
+      - .env
+    depends_on:
+      pg_database:
+        condition: service_healthy
+  pg_database:
+    image: postgres:18
+    env_file:
+      - .env
+    environment:
+        POSTGRES_USER: ${POSTGRES_SETTINGS__USER}
+        POSTGRES_PASSWORD: ${POSTGRES_SETTINGS__PASSWORD}
+        POSTGRES_DB: ${POSTGRES_SETTINGS__DATABASE}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    environment:
+      TELEGRAM_SETTINGS__TOKEN: ${TELEGRAM_SETTINGS__TOKEN:?добавь TELEGRAM_SETTINGS__TOKEN в .env}
+      TELEGRAM_SETTINGS__ALLOWED_USER_IDS: ${TELEGRAM_SETTINGS__ALLOWED_USER_IDS:-[]}
+      TELEGRAM_SETTINGS__PROXY: ${TELEGRAM_DOCKER_PROXY:-}
+      RECEIPT_API_SETTINGS__URL: http://api:8000
+    volumes:
+      - ./bot:/tg_bot/bot
+    depends_on:
+      - api
+    stop_signal: SIGINT
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+
+
