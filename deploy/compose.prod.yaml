@@ -1,4 +1,4 @@
-name: fastapi-train
+name: Cometa
 
 x-logging: &logging
   driver: json-file
@@ -8,7 +8,7 @@ x-logging: &logging
 
 services:
   api:
-    image: ghcr.io/enipherlucker-ai/fastapi_train-api:${IMAGE_TAG}
+    image: ghcr.io/enipherlucker-ai/cometa-api:${IMAGE_TAG}
     ports:
       - "127.0.0.1:8000:8000"
     env_file:
@@ -42,7 +42,7 @@ services:
     logging: *logging
 
   bot:
-    image: ghcr.io/enipherlucker-ai/fastapi_train-bot:${IMAGE_TAG:?укажи IMAGE_TAG}
+    image: ghcr.io/enipherlucker-ai/cometa-bot:${IMAGE_TAG:?укажи IMAGE_TAG}
     environment:
       TELEGRAM_SETTINGS__TOKEN: ${TELEGRAM_SETTINGS__TOKEN:?добавь TELEGRAM_SETTINGS__TOKEN в .env}
       TELEGRAM_SETTINGS__ALLOWED_USER_IDS: ${TELEGRAM_SETTINGS__ALLOWED_USER_IDS:-[]}
@@ -54,7 +54,7 @@ services:
     logging: *logging
 
   web:
-    image: ghcr.io/enipherlucker-ai/fastapi_train-web:${IMAGE_TAG:?укажи IMAGE_TAG}
+    image: ghcr.io/enipherlucker-ai/cometa-web:${IMAGE_TAG:?укажи IMAGE_TAG}
     depends_on:
       - api
     restart: unless-stopped

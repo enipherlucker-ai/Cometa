@@ -1,5 +1,5 @@
 env:
-  IMAGE_PREFIX: ghcr.io/enipherlucker-ai/fastapi_train
+  IMAGE_PREFIX: ghcr.io/enipherlucker-ai/Cometa
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -100,11 +100,11 @@ jobs:
         env:
           TARGET: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
         run: |
-          scp deploy/compose.prod.yaml "$TARGET:/opt/fastapi-train/compose.yaml"
-          scp deploy/deploy.sh "$TARGET:/opt/fastapi-train/deploy.sh"
-          scp database/init/*.sql "$TARGET:/opt/fastapi-train/database/init"
-          scp deploy/Caddyfile "$TARGET:/opt/fastapi-train/Caddyfile"
+          scp deploy/compose.prod.yaml "$TARGET:/opt/cometa/compose.yaml"
+          scp deploy/deploy.sh "$TARGET:/opt/cometa/deploy.sh"
+          scp database/init/*.sql "$TARGET:/opt/cometa/database/init"
+          scp deploy/Caddyfile "$TARGET:/opt/cometa/Caddyfile"
       - name: Выкатка
         env:
           TARGET: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
-        run: ssh "$TARGET" "/opt/fastapi-train/deploy.sh $GITHUB_SHA"
+        run: ssh "$TARGET" "/opt/cometa/deploy.sh $GITHUB_SHA"
