@@ -4,8 +4,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base
 
 
-class Group(Base):
-    __tablename__ = 'groups'
+class Category(Base):
+    __tablename__ = 'categories'
     __table_args__ = {"schema": "payment_statistic"}
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('payment_statistic.users.id'))

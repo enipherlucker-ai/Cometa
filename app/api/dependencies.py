@@ -12,7 +12,7 @@ from app.repositories import (
     ApiLogsRepository,
     ReceiptRepository,
     ReceiptCompoundRepository,
-    GroupRepository,
+    CategoryRepository,
 )
 from app.config import get_settings
 from app.foreign_api.check_receipt import CheckReceipt
@@ -76,11 +76,11 @@ def get_receipt_compound_repository(session: SessionDep) -> ReceiptCompoundRepos
 ReceiptCompoundDep = Annotated[ReceiptCompoundRepository, Depends(get_receipt_compound_repository)]
 
 
-def get_group_repository(session: SessionDep) -> GroupRepository:
-    return GroupRepository(session)
+def get_category_repository(session: SessionDep) -> CategoryRepository:
+    return CategoryRepository(session)
 
 
-GroupRepoDep = Annotated[GroupRepository, Depends(get_group_repository)]
+CategoryRepoDep = Annotated[CategoryRepository, Depends(get_category_repository)]
 
 
 @lru_cache

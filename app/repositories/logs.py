@@ -6,10 +6,11 @@ class ApiLogsRepository(BaseRepository[ApiLogs]):
     model = ApiLogs
 
     async def logs_add(
-            self, user_id: int, service: str, method: str, comment: str, input_data: str, output_data: str
+            self, user_id: int, is_err: bool, service: str, method: str, comment: str, input_data: str, output_data: str
     ) -> None:
         obj = self.model(
             user_id=user_id,
+            is_err=is_err,
             service=service,
             method=method,
             comment=comment,

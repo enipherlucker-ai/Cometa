@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
 
-class ItemGroup(BaseModel):
+class ItemCategory(BaseModel):
     index: int
-    group_id: int
+    category_id: int
 
 
 class Categorization(BaseModel):
-    items: list[ItemGroup]
+    items: list[ItemCategory]

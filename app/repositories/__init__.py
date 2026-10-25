@@ -2,7 +2,7 @@ from .base import BaseRepository
 from .user import UserRepository
 from .logs import ApiLogsRepository
 from .receipt import ReceiptRepository, ReceiptCompoundRepository
-from .groups import GroupRepository
+from .categories import CategoryRepository
 
 __all__ = [
     "BaseRepository",
@@ -10,5 +10,5 @@ __all__ = [
     "ApiLogsRepository",
     "ReceiptRepository",
     "ReceiptCompoundRepository",
-    "GroupRepository",
+    "CategoryRepository",
 ]

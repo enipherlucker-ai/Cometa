@@ -11,3 +11,6 @@ class ReceiptBase(BaseModel):
 
 class ReceiptCreated(BaseModel):
     id: int
+
+# class ReceiptCompound(BaseModel):
+#

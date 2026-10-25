@@ -1,4 +1,4 @@
-CREATE TABLE payment_statistic.groups
+CREATE TABLE payment_statistic.categories
 (
     id          SERIAL PRIMARY KEY ,
     user_id     INTEGER NOT NULL REFERENCES payment_statistic.users (id),
@@ -6,7 +6,22 @@ CREATE TABLE payment_statistic.groups
     description TEXT NOT NULL
 );
 
-INSERT INTO payment_statistic.groups (user_id, name, description)
+COMMENT ON TABLE payment_statistic.categories
+    IS 'Категории товаров';
+
+COMMENT ON COLUMN payment_statistic.categories.id
+    IS 'Уникальный идентификатор категории';
+
+COMMENT ON COLUMN payment_statistic.categories.user_id
+    IS 'Идентификатор пользователя, которому принадлежит категория';
+
+COMMENT ON COLUMN payment_statistic.categories.name
+    IS 'Название категории';
+
+COMMENT ON COLUMN payment_statistic.categories.description
+    IS 'Описание категории';
+
+INSERT INTO payment_statistic.categories (user_id, name, description)
 VALUES
     (20260308, 'Готовая еда', 'Кафе, рестораны, доставка еды, готовые блюда'),
     (20260308, 'Фрукты', 'Мандарины, яблоки, груши'),

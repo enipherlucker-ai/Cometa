@@ -1,4 +1,4 @@
-from sqlalchemy import Text, ForeignKey
+from sqlalchemy import Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
@@ -8,6 +8,7 @@ class ApiLogs(Base):
     __tablename__ = "api_logs"
     __table_args__ = {"schema": "logs"},
 
+    is_err: Mapped[bool] = mapped_column(Boolean)
     service: Mapped[str] = mapped_column(Text)
     user_id: Mapped[int] = mapped_column(ForeignKey('payment_statistic.users.id'))
     method: Mapped[str] = mapped_column(Text)

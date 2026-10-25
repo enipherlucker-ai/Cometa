@@ -22,6 +22,7 @@ async function onLogout(){
   <main>
     <h1>Привет, {{ currentUser?.name }}!</h1>
     {{ logoutError }}
+    <NuxtLink to="/receipts">Мои чеки</NuxtLink>
     <button @click="onLogout">Выйти</button>
   </main>
 </template>

@@ -7,19 +7,19 @@ from app.foreign_api.categorizer.errors import CategorizerError
 from app.foreign_api.categorizer.schemas import Categorization
 
 SYSTEM_PROMPT = """Ты раскладываешь товары из кассового чека по группам расходов.
-Тебе дают JSON с двумя списками: groups (id, name, description) и items (index, name).
-Для каждого товара из items выбери ровно одну группу и верни её id вместе с index товара.
-Используй только id из списка groups. Если не уверен, выбери группу «Другое»."""
+Тебе дают JSON с двумя списками: categories (id, name, description) и items (index, name).
+Для каждого товара из items выбери ровно одну категорию и верни её id вместе с index товара.
+Используй только id из списка categories. Если не уверен, выбери категорию «Другое»."""
 
 class ReceiptCategorizer:
     def __init__(self, client : AsyncOpenAI, model: str) -> None:
         self.client = client
         self.model = model
 
-    async def categorize(self, names: list[str], groups: list[dict]) -> Categorization:
+    async def categorize(self, names: list[str], categories: list[dict]) -> Categorization:
         user_content = json.dumps(
             {
-                "groups": groups,
+                "categories": categories,
                 "items": [{"index": i, "name": name} for i, name in enumerate(names)],
             },
             ensure_ascii=False

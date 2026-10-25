@@ -34,7 +34,7 @@ class ReceiptCompound(Base):
     name: Mapped[str] = mapped_column(Text, nullable=False)
     receipt_id: Mapped[int] = mapped_column(Integer, ForeignKey("payment_statistic.receipt.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("payment_statistic.users.id"), nullable=False)
-    group_id: Mapped[int] = mapped_column(Integer, ForeignKey("payment_statistic.groups.id"), nullable=False)
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("payment_statistic.categories.id"), nullable=False)
     vat: Mapped[int] = mapped_column(Integer, nullable=False)
     vat_sum: Mapped[Decimal] = mapped_column(Numeric(8, 2), nullable=False)
     price: Mapped[Decimal] = mapped_column(Numeric(8, 2), nullable=False)
