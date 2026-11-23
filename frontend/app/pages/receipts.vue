@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { ReceiptRow } from '~/types/receipt'
+import type {ReceiptRow} from '~/types/receipt'
+
+const requestFetch = useRequestFetch()
 
 useHead({title: 'Чеки'})
 
@@ -13,9 +15,22 @@ const submitting = ref(false)
 
 async function loadReceipts() {
   loadError.value = ''
-  // TODO: загрузка строк чеков из API, например:
-  // rows.value = await $fetch<ReceiptRow[]>('/api/receipts')
-  rows.value = []
+
+  try {
+    rows.value = await requestFetch<ReceiptRow[]>(
+        '/api/receipt/get_compound',
+        {
+          query: {
+            limit: 50,
+            offset: 0,
+          }
+        },
+    )
+  } catch {
+    loadError.value = 'Не удалось загрузить чеки'
+  }
+
+
 }
 
 function openForm() {
@@ -32,8 +47,7 @@ async function onSubmit() {
   submitError.value = ''
   submitting.value = true
   try {
-    // TODO: отправка строки чека в API, например:
-    // await $fetch('/api/create_receipt', {method: 'POST', body: {raw_receipt: rawReceipt.value}})
+    await $fetch('/api/create_receipt', {method: 'POST', body: {raw_receipt: rawReceipt.value}})
     closeForm()
     await loadReceipts()
   } catch (error) {
@@ -48,48 +62,56 @@ await loadReceipts()
 
 <template>
   <main class="page">
-    <section class="content">
+    <header class="topbar">
+      <NuxtLink to="/" class="home-link" aria-label="На главную">
+        <img src="/cometa-logo.png" alt="" width="44" height="44">
+      </NuxtLink>
       <h1>Чеки</h1>
-      <p v-if="loadError" class="error">{{ loadError }}</p>
+      <div class="topbar-actions">
+        <NuxtLink to="/" class="back-link">На главную</NuxtLink>
+        <button @click="openForm">Добавить чек</button>
+      </div>
+    </header>
 
-      <p v-if="rows.length === 0" class="empty">
+    <p v-if="loadError" class="error">{{ loadError }}</p>
+
+    <section v-if="rows.length === 0" class="empty">
+      <img src="/cometa-logo.png" alt="" width="120" height="120">
+      <p>
         У вас ничего. Хотите <a href="#" @click.prevent="openForm">добавить чек</a>?
       </p>
-
-      <table v-else>
-        <thead>
-          <tr>
-            <th>Дата время</th>
-            <th>Товар</th>
-            <th>Чек</th>
-            <th>Категория</th>
-            <th>НДС</th>
-            <th>Сумма НДС</th>
-            <th>Цена</th>
-            <th>Кол-во</th>
-            <th>Итог</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in rows" :key="row.id">
-            <td>{{ row.period }}</td>
-            <td>{{ row.name }}</td>
-            <td>{{ row.receipt_id }}</td>
-            <td>{{ row.group_name }}</td>
-            <td>{{ row.vat }}</td>
-            <td>{{ row.vat_sum }}</td>
-            <td>{{ row.price }}</td>
-            <td>{{ row.quantity }}</td>
-            <td>{{ row.sum }}</td>
-          </tr>
-        </tbody>
-      </table>
     </section>
 
-    <aside class="sidebar">
-      <button @click="openForm">Добавить чек</button>
-      <NuxtLink to="/">На главную</NuxtLink>
-    </aside>
+    <div v-else class="table-wrap">
+      <table>
+        <thead>
+        <tr>
+          <th>Дата время</th>
+          <th>Товар</th>
+          <th class="num">Чек</th>
+          <th>Категория</th>
+          <th class="num">НДС</th>
+          <th class="num">Сумма НДС</th>
+          <th class="num">Цена</th>
+          <th class="num">Кол-во</th>
+          <th class="num">Итог</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="row in rows" :key="row.id">
+          <td class="date">{{ row.period }}</td>
+          <td class="name">{{ row.name }}</td>
+          <td class="num muted">{{ row.receipt_id }}</td>
+          <td><span class="tag">{{ row.group_name }}</span></td>
+          <td class="num muted">{{ row.vat }}</td>
+          <td class="num muted">{{ row.vat_sum }}</td>
+          <td class="num">{{ row.price }}</td>
+          <td class="num">{{ row.quantity }}</td>
+          <td class="num total">{{ row.sum }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div v-if="formOpen" class="overlay" @click.self="closeForm">
       <form class="card" @submit.prevent="onSubmit">
@@ -112,81 +134,164 @@ await loadReceipts()
 
 <style scoped>
 .page {
-  display: flex;
-  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 24px;
-  align-items: flex-start;
 }
 
-.content {
-  flex: 1;
-  overflow-x: auto;
-}
-
-.sidebar {
-  width: 180px;
+.topbar {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-h1, h2 {
-  margin: 0 0 16px;
+.home-link img {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  padding: 2px;
+  background: var(--surface);
+}
+
+h1 {
+  font-size: 30px;
+}
+
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-link {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-m);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-}
-
-th, td {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  text-align: left;
   font-size: 14px;
 }
 
+th,
+td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
 th {
-  background: #e5e7eb;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: #f6f7fb;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: #f6f7fb;
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted,
+.date {
+  color: var(--ink-soft);
+}
+
+.name {
+  white-space: normal;
+  min-width: 200px;
+  font-weight: 500;
+}
+
+.total {
+  font-weight: 600;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e7eafb;
+  color: var(--accent-hover);
+  font-size: 13px;
 }
 
 .empty {
-  color: #6b7280;
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  background: var(--surface);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-m);
+  color: var(--ink-soft);
+}
+
+.empty img {
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+.empty p {
+  margin: 0;
+  font-size: 17px;
 }
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  background: rgba(26, 33, 66, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .card {
-  width: 420px;
-  padding: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 460px;
+  padding: 28px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-m);
+  box-shadow: 8px 8px 0 var(--star);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+}
+
+h2 {
+  font-size: 22px;
 }
 
 label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 14px;
-}
-
-input {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 16px;
+  font-weight: 500;
 }
 
 .actions {
@@ -195,29 +300,43 @@ input {
   gap: 8px;
 }
 
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
 button.secondary {
-  background: #e5e7eb;
-  color: #111827;
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
 }
 
-button:disabled {
-  background: #93c5fd;
-  cursor: wait;
+button.secondary:hover:not(:disabled) {
+  background: #f6f7fb;
+  border-color: var(--ink-soft);
 }
 
 .error {
-  margin: 0;
-  color: #dc2626;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: var(--radius-s);
+  background: var(--danger-bg);
+  color: var(--danger);
   font-size: 14px;
+}
+
+.card .error {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
 }
 </style>

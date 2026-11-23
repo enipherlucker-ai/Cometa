@@ -1,7 +1,9 @@
 import json
+from typing import Annotated
 from datetime import datetime
 from decimal import Decimal
 from collections.abc import Sequence
+from pydantic import Field
 
 from fastapi import APIRouter, HTTPException
 
@@ -15,14 +17,15 @@ from app.api.dependencies import (
     CategorizerDep,
     CurrentUserDep,
 )
+
 from app.constants import DEFAULT_CATEGORY_NAME
 from app.foreign_api.categorizer import ReceiptCategorizer, CategorizerError
 from app.foreign_api.check_receipt import CheckReceipt, CheckReceiptUnavailableError, ReceiptNotFoundError
 from app.repositories import ReceiptCompoundRepository, ApiLogsRepository
-from app.schemas import ReceiptBase, ReceiptCreated
+from app.schemas import ReceiptBase, ReceiptCreated, ReceiptCompound
 from app.models.categories import Category
 
-router = APIRouter(tags=["receipt"])
+router = APIRouter(prefix="/receipt", tags=["receipt"])
 
 
 def kopecks_to_rubles(value: int) -> Decimal:
@@ -189,5 +192,19 @@ async def create_receipt(
 
     return ReceiptCreated(id=receipt_object.id)
 
-# @router.post("/receipt", response_model=ReceiptCreated)
-# async def get
+@router.get("/get_compound", response_model=list[ReceiptCompound])
+async def get_receipts(
+        limit: Annotated[int, Field(examples=[50])],
+        offset: Annotated[int, Field(examples=[0])],
+        receipt_compound: ReceiptCompoundDep,
+        current_user: CurrentUserDep
+) -> list[ReceiptCompound]:
+    response = await receipt_compound.get_receipts_compound(
+        user_id=current_user.id,
+        limit=limit,
+        offset=offset,
+    )
+    return response
+
+
+

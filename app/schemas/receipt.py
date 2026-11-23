@@ -1,9 +1,9 @@
 from typing import Annotated
 
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 RawReceipt = Annotated[str, Field(examples=["t=20261010T2119&s=5099.62&fn=7380440903609803&i=22385&fp=3751356996&n=1"])]
-
 
 class ReceiptBase(BaseModel):
     raw_receipt: RawReceipt
@@ -12,5 +12,14 @@ class ReceiptBase(BaseModel):
 class ReceiptCreated(BaseModel):
     id: int
 
-# class ReceiptCompound(BaseModel):
-#
+
+class ReceiptCompound(BaseModel):
+    period: datetime
+    name: str
+    group_name: str
+    vat: int
+    vat_sum: float
+    price: float
+    quantity: float
+    sum: float
+

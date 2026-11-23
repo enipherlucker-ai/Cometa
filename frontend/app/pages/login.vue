@@ -39,6 +39,11 @@ async function onSubmit() {
 <template>
   <main class="page">
     <form class="card" @submit.prevent="onSubmit">
+      <div class="brand">
+        <img src="/cometa-logo.png" alt="" class="brand-logo" width="56" height="56">
+        <span class="brand-name">Cometa</span>
+      </div>
+
       <h1>Вход</h1>
       <p v-if="errorText" class="error">{{ errorText }}</p>
 
@@ -60,64 +65,68 @@ async function onSubmit() {
 <style scoped>
 .page {
   min-height: 100vh;
+  padding: 24px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .card {
-  width: 320px;
-  padding: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 360px;
+  padding: 32px 28px;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-m);
+  box-shadow: 8px 8px 0 var(--star);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  padding: 3px;
+  background: var(--surface);
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 18px;
 }
 
 h1 {
-  margin: 0;
-  font-size: 24px;
+  font-size: 28px;
 }
 
 label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 14px;
-}
-
-input {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-input:focus {
-  outline: 2px solid #2563eb;
-  border-color: transparent;
+  font-weight: 500;
 }
 
 button {
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background: #93c5fd;
-  cursor: wait;
+  margin-top: 4px;
 }
 
 .error {
   margin: 0;
-  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: var(--radius-s);
+  background: var(--danger-bg);
+  color: var(--danger);
   font-size: 14px;
 }
 </style>

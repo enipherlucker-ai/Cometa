@@ -11,8 +11,7 @@ export default defineNuxtConfig({
       },
   },
   routeRules: {
-    '/api/auth/login': { proxy: `${apiTarget}/auth/login` },
-    '/api/auth/logout': { proxy: `${apiTarget}/auth/logout` },
-    '/api/auth/me': { proxy: `${apiTarget}/auth/me` },
+    '/api/auth/**': { proxy: `${apiTarget}/auth/**` },
+    '/api/receipt/**': { proxy: `${apiTarget}/receipt/**` },
   },
 })
